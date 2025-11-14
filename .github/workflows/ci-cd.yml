@@ -49,3 +49,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/myapi:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/myapi:${{ github.sha }}
+
+
