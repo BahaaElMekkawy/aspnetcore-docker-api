@@ -1,0 +1,41 @@
+name: CI-CD for ASP.NET Core 8 API
+
+on:
+  push:
+    branches: [ "main" ]      # Trigger on pushes to main
+  pull_request:
+    branches: [ "main" ]      # Trigger on PRs to main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release
+docker-build-and-push:
+  ...
+  steps:
+    ...
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .          # Root of your API project
+        file: ./Dockerfile  # Dockerfile in the root
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/myapi:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/myapi:${{ github.sha }}
