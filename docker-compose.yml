@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql-server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password123!
+    ports:
+      - "1433:1433"
+    networks:
+      - myapp-network
+
+  myapi:
+    image: myapi
+    container_name: myapi-container
+    depends_on:
+      - sql-server
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sql-server;Database=MyApp;User Id=sa;Password=Password123!;TrustServerCertificate=True;
+    ports:
+      - "8080:80"
+    networks:
+      - myapp-network
+
+networks:
+  myapp-network:
+    driver: bridge
